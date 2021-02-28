@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "shared-docs"
+version = "0.1.0"
+description = ""
+authors = ["Taranjit Kooner <koonerts@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9.1"
+boto3 = "^1.16.54"
+botocore = "^1.19.54"
+requests = "^2.25.1"
+neo4j = "^4.2.1"
+pandas = "^1.2.0"
+PyExcelerate = "^0.10.0"
+openpyxl = "^3.0.6"
+xlrd = "^2.0.1"
+XlsxWriter = "^1.3.7"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
