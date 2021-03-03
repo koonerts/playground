@@ -28,12 +28,15 @@ type BotIntentInfo struct {
 	IntentMap    map[string]*lmbs.GetIntentOutput
 	SlotTypesMap map[string]*lmbs.GetSlotTypeOutput
 }
+
 func GetBotIntentInfo(botName, botAlias string) *BotIntentInfo {
 	intentMap := map[string]*lmbs.GetIntentOutput{}
 	slotTypeMap := map[string]*lmbs.GetSlotTypeOutput{}
 	wg := sync.WaitGroup{}
 	client := GetLexModelClient()
 	lexBot := GetLexBot(botName, botAlias)
+	intentChannel := make(chan *lmbs.GetIntentOutput, len(lexBot.Intents))
+	slotTypeChannel := make(chan *lmbs.GetSlotTypeOutput)
 	for _, intent := range lexBot.Intents {
 		wg.Add(1)
 		go func(getIntentReq *lmbs.GetIntentInput) {
@@ -44,17 +47,26 @@ func GetBotIntentInfo(botName, botAlias string) *BotIntentInfo {
 					wg.Add(1)
 					go func(getSlotTypeReq *lmbs.GetSlotTypeInput) {
 						getSlotTypeResp, _ := client.GetSlotType(context.TODO(), getSlotTypeReq)
-						slotTypeMap[*getSlotTypeResp.Name] = getSlotTypeResp
+						slotTypeChannel <- getSlotTypeResp
 						wg.Done()
 					}(&lmbs.GetSlotTypeInput{slot.SlotType, slot.SlotTypeVersion})
 				}
 			}
 
-			intentMap[*getIntentResp.Name] = getIntentResp
+			intentChannel <- getIntentResp
 			wg.Done()
 		}(&lmbs.GetIntentInput{intent.IntentName, intent.IntentVersion})
 	}
+	close(intentChannel)
+	close(slotTypeChannel)
 	wg.Wait()
+
+	for intentResp := range intentChannel {
+		intentMap[*intentResp.Name] = intentResp
+	}
+	for slotTypeResp := range slotTypeChannel {
+		slotTypeMap[*slotTypeResp.Name] = slotTypeResp
+	}
 
 	return &BotIntentInfo{intentMap, slotTypeMap}
 }
@@ -78,7 +90,7 @@ func GetBotUtterancesReplaced(botName, botAlias string) []string {
 					start := strings.Index(utt, "{")
 					if start != -1 {
 						end := strings.Index(utt, "}")
-						slotName := utt[start+1:end]
+						slotName := utt[start+1 : end]
 						var slotType *lmbs.GetSlotTypeOutput
 						for _, slot := range botIntentInfoMap.IntentMap[i].Slots {
 							if slotName == *slot.Name {
