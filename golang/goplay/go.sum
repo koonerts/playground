@@ -10,6 +10,8 @@ github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.0.2 h1:4AH9fFjUlV
 github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.0.2/go.mod h1:45MfaXZ0cNbeuT0KQ1XJylq8A6+OpVV2E5kvY/Kq+u8=
 github.com/aws/aws-sdk-go-v2/service/lexmodelbuildingservice v1.1.1 h1:2wCt/l1Tc2s+qT3SbVp0ukKf+VkpBMP+ykrBwMIAbRc=
 github.com/aws/aws-sdk-go-v2/service/lexmodelbuildingservice v1.1.1/go.mod h1:v5tNKuCsMA8zdxltJXRtqIVgvQ8gxcPK1Gw1JHtVVRo=
+github.com/aws/aws-sdk-go-v2/service/lexruntimeservice v1.1.1 h1:0MwmBh5raiHrHuGnmMcpm3z1GNQCoamwrZRylY2BCHA=
+github.com/aws/aws-sdk-go-v2/service/lexruntimeservice v1.1.1/go.mod h1:MGUB+Q0+0fYn5r09Vd/RtmPvnTvvtoiL92v0j54ZGb4=
 github.com/aws/aws-sdk-go-v2/service/sso v1.1.1 h1:37QubsarExl5ZuCBlnRP+7l1tNwZPBSTqpTBrPH98RU=
 github.com/aws/aws-sdk-go-v2/service/sso v1.1.1/go.mod h1:SuZJxklHxLAXgLTc1iFXbEWkXs7QRTQpCLGaKIprQW0=
 github.com/aws/aws-sdk-go-v2/service/sts v1.1.1 h1:TJoIfnIFubCX0ACVeJ0w46HEH5MwjwYN4iFhuYIhfIY=
