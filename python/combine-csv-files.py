@@ -3,8 +3,8 @@ import os
 import pandas as pd
 
 
-def combine_data_1():
-    client_filter = 'cvs'
+def combine_call_center_data():
+    client_filter = 'thd'
     month_filter = 'feb'
     path = f"C:/My Projects/other/Call_Center_Data/combine-files/{month_filter}/{client_filter}"
 
@@ -12,7 +12,7 @@ def combine_data_1():
     sf_detailed = pd.DataFrame()
     in_contact = pd.DataFrame()
 
-    for f in glob.glob(os.path.join(path, f"sf-basic-{month_filter}*.xlsx")):
+    for f in glob.glob(os.path.join(path, f"sf-basic-monthly.xls")):
         if f.endswith('.xlsx'):
             df = pd.read_excel(f, sheet_name=0, engine='openpyxl')
         else:
@@ -21,7 +21,7 @@ def combine_data_1():
         df = df[df['Call Object Identifier'].notna()]
         sf_basic = sf_basic.append(df, ignore_index=True)
 
-    for f in glob.glob(os.path.join(path, f"sf-detailed-{month_filter}*.xlsx")):
+    for f in glob.glob(os.path.join(path, f"sf-detailed-monthly.xls")):
         if f.endswith('.xlsx'):
             df = pd.read_excel(f, sheet_name=0, engine='openpyxl', usecols=lambda x: x not in ['Case Origin', 'Type'])
         else:
@@ -30,7 +30,7 @@ def combine_data_1():
         df = df[df['Case Number'].notna()]
         sf_detailed = sf_detailed.append(df, ignore_index=True)
 
-    for f in glob.glob(os.path.join(path, f"incontact-{month_filter}*.xls")):
+    for f in glob.glob(os.path.join(path, f"incontact-monthly.xls")):
         if f.endswith('.xlsx'):
             df = pd.read_excel(f, sheet_name=0, engine='openpyxl')
         else:
@@ -71,47 +71,21 @@ def combine_data_1():
         worksheet.set_column('B:B', 17, num_format)
 
 
-def combine_data_2():
-    path = "C:/My Projects/other/Call_Center_Data/Case Analytics/files"
+def combine_csvs():
+    data = pd.DataFrame()
+    path = "c:/users/a800689/downloads"
+    for f in glob.glob(os.path.join(path, f"logs-insights-results*")):
+        df = pd.read_csv(f)
+        data = data.append(df)
 
-    salesforce = pd.DataFrame()
-    in_contact = pd.DataFrame()
-
-    month_filter = ''
-    client_filter = 'homedepot'
-
-    for f in glob.glob(os.path.join(path, f"{client_filter}*salesforce-{month_filter}*.xlsx")):
-        df = pd.read_excel(f)
-        df = df[df['Case Number'].notna()]
-        salesforce = salesforce.append(df, ignore_index=True)
-
-    for f in glob.glob(os.path.join(path, f"{client_filter}*incontact-{month_filter}*.xls")):
-        df = pd.read_excel(f)
-        df = df[df['Agent ID'].notna()]
-        in_contact = in_contact.append(df, ignore_index=True)
-
-    merged_data = in_contact.merge(salesforce, how='left', left_on='Contact ID', right_on='CallReference')
-    merged_data = merged_data.rename(columns={"Date": "Activity Date"})
-
-    # cols = ['Contact ID', 'Master Contact ID', 'Contact Start Date Time', 'Contact End Date Time', 'Year', 'Week', 'Agent ID', 'Skill Name', 'Skill Direction', 'ANI/From', 'DNIS/To',
-    #         'Conference Time', 'Hold Time', 'Talk Time', 'Callback Time', 'Routing Time', 'Handle Time', 'Active Talk Time', 'Abandon Time', 'Inqueue Time', 'ACW Time', 'Transferred',
-    #         'Case Number', 'Account Name', 'Client ID', 'Activity Date', 'Date/Time Opened', 'Date/Time Closed', 'Last Activity', 'Contact.Case HoverID', 'Name', 'Phone',
-    #         'Mailing State/Province', 'Employment Status', 'Benefit Class', 'Business Unit', 'Age', 'Contact Name', 'Subject', 'Case Origin', 'Case Owner', 'Type',
-    #         'Detail', 'Disposition', 'Topic1', 'Priority', 'Status', 'Age (Days)', 'Business Hours Age (Days)', 'First call resolution']
-
-    cols = ['Contact ID', 'Master Contact ID', 'Contact Start Date Time', 'Contact End Date Time', 'Year', 'Week', 'Agent ID', 'Skill Name', 'Skill Direction',
-            'ANI/From', 'DNIS/To', 'Conference Time', 'Hold Time', 'Talk Time', 'Callback Time', 'Routing Time', 'Handle Time', 'Active Talk Time',
-            'Abandon Time', 'Inqueue Time', 'ACW Time', 'Transferred',
-
-            'Case Number', 'Account Name', 'Client ID', 'Opened Date', 'Last Activity', 'Contact: Last Modified Date', 'Contact.Case HoverID',
-            'Case Origin', 'Case Owner', 'Type', 'Disposition', 'Description', 'Topic1', 'Priority', 'Status', 'Business Hours Age (Days)',
-            'SLA', 'SLA Age Days', 'First call resolution']
-
-    # merged_data.to_excel('C:/My Projects/other/Call_Center_Data/joined_data.xlsx', columns=cols)
-    file_name = client_filter or 'all_data'
-
-    merged_data.sort_values(by='Contact ID', inplace=True)
-    merged_data.to_csv(f'C:/My Projects/other/Call_Center_Data/Case Analytics/files/{file_name+"_oe_data"}.csv', columns=cols)
+    data.sort_values(by='inputTranscript', inplace=True)
+    data.to_csv("c:/my projects/emma-bot-log-insights.csv")
+    # with pd.ExcelWriter(f'C:/My Projects/other/Call_Center_Data/combine-files/{month_filter}/{client_filter}/{file_name+"_data"}.xlsx',
+    #                     engine='xlsxwriter',
+    #                     datetime_format='YYYY-MM-DD HH:MM:SS',
+    #                     date_format='YYYY-MM-DD') as excel_writer:
+    #
+    #     data.to_excel(excel_writer, columns=cols, sheet_name='Sheet1', index=False)
 
 
-combine_data_1()
+combine_csvs()
